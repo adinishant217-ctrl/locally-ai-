@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val response = withContext(Dispatchers.IO) {
-                        // USING MICROSOFT BITNET HERE:
                         edge.text.generate(
                             prompt = prompt,
                             model = ModelPresets.bitnet
