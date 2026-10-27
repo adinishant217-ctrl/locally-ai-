@@ -6,17 +6,17 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import io.github.aatricks.llmedge.LLMEdge
-import io.github.aatricks.llmedge.model.ModelSpec
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import io.github.aatricks.llmedge.LLMEdge
+import io.github.aatricks.llmedge.model.ModelPresets
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var editTextPrompt: EditText
     private lateinit var buttonSend: Button
     private lateinit var textViewResponse: TextView
-
-    private lateinit var edge: LLMEdge
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,24 +26,24 @@ class MainActivity : AppCompatActivity() {
         buttonSend = findViewById(R.id.buttonSend)
         textViewResponse = findViewById(R.id.textViewResponse)
 
-        edge = LLMEdge.create(applicationContext, lifecycleScope)
+        val edge = LLMEdge.create(applicationContext, lifecycleScope)
 
         buttonSend.setOnClickListener {
             val prompt = editTextPrompt.text.toString()
             if (prompt.isBlank()) return@setOnClickListener
 
             editTextPrompt.text.clear()
-            textViewResponse.text = "Thinking..."
+            textViewResponse.text = "Thinking with Microsoft BitNet..."
 
             lifecycleScope.launch {
                 try {
-                    val response = edge.text.generate(
-                        prompt = prompt,
-                        model = ModelSpec.huggingFace(
-                            repoId = "unsloth/Qwen2.5-0.5B-Instruct-GGUF",
-                            filename = "qwen2.5-0.5b-instruct-q4_k_m.gguf"
+                    val response = withContext(Dispatchers.IO) {
+                        // USING MICROSOFT BITNET HERE:
+                        edge.text.generate(
+                            prompt = prompt,
+                            model = ModelPresets.bitnet
                         )
-                    )
+                    }
                     textViewResponse.text = response
                 } catch (e: Exception) {
                     textViewResponse.text = "Error: ${e.message}"
