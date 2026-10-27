@@ -6,12 +6,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import io.github.aatricks.llmedge.LLMEdge
-import io.github.aatricks.llmedge.model.ChatSession
-import io.github.aatricks.llmedge.model.ModelPresets
+import io.github.aatricks.llmedge.model.ModelSpec
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonSend: Button
     private lateinit var textViewResponse: TextView
 
-    private var session: ChatSession? = null
+    private lateinit var edge: LLMEdge
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,23 +26,7 @@ class MainActivity : AppCompatActivity() {
         buttonSend = findViewById(R.id.buttonSend)
         textViewResponse = findViewById(R.id.textViewResponse)
 
-        // Initialize LLMEdge and load BitNet model
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val engine = LLMEdge.newInstance(
-                    context = applicationContext,
-                    modelPreset = ModelPresets.bitnetB158_2B4T()
-                )
-                session = engine.createChatSession()
-                withContext(Dispatchers.Main) {
-                    textViewResponse.text = "Model loaded. Ready to chat."
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    textViewResponse.text = "Error loading model: ${e.message}"
-                }
-            }
-        }
+        edge = LLMEdge.create(applicationContext, lifecycleScope)
 
         buttonSend.setOnClickListener {
             val prompt = editTextPrompt.text.toString()
@@ -56,9 +37,13 @@ class MainActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    val response = withContext(Dispatchers.IO) {
-                        session?.chat(prompt) ?: "Session not ready"
-                    }
+                    val response = edge.text.generate(
+                        prompt = prompt,
+                        model = ModelSpec.huggingFace(
+                            repo = "bitnet-ai/bitnet-b158B-2B-4T",
+                            quantized = true
+                        )
+                    )
                     textViewResponse.text = response
                 } catch (e: Exception) {
                     textViewResponse.text = "Error: ${e.message}"
