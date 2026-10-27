@@ -40,8 +40,8 @@ class MainActivity : AppCompatActivity() {
                     val response = edge.text.generate(
                         prompt = prompt,
                         model = ModelSpec.huggingFace(
-                            repo = "bitnet-ai/bitnet-b158B-2B-4T",
-                            quantized = true
+                            repoId = "unsloth/Qwen2.5-0.5B-Instruct-GGUF",
+                            filename = "qwen2.5-0.5b-instruct-q4_k_m.gguf"
                         )
                     )
                     textViewResponse.text = response
