@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace = "com.example.bitnetagent"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.example.bitnetagent"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
