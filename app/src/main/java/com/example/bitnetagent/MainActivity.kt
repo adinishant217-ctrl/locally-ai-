@@ -9,8 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import io.github.aatricks.llmedge.LLMEdge
-import io.github.aatricks.llmedge.model.ModelPresets
+import io.aatricks.llmedge.LLMEdge
+import io.aatricks.llmedge.model.ModelPresets
 
 class MainActivity : AppCompatActivity() {
 
