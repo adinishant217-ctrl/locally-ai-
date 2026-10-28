@@ -22,6 +22,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // --- CRASH HANDLER ADDED HERE ---
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            runOnUiThread {
+                textViewResponse.text = "CRASH DETECTED:\n\n${throwable.message}\n\n${throwable.stackTraceToString().take(1000)}"
+            }
+            throwable.printStackTrace()
+        }
+        // --------------------------------
+
         editTextPrompt = findViewById(R.id.editTextPrompt)
         buttonSend = findViewById(R.id.buttonSend)
         textViewResponse = findViewById(R.id.textViewResponse)
@@ -33,10 +42,11 @@ class MainActivity : AppCompatActivity() {
             if (prompt.isBlank()) return@setOnClickListener
 
             editTextPrompt.text.clear()
-            textViewResponse.text = "Thinking with Microsoft BitNet..."
+            textViewResponse.text = "Downloading/Loading Model... (Please wait)"
 
             lifecycleScope.launch {
                 try {
+                    textViewResponse.text = "Thinking..."
                     val response = withContext(Dispatchers.IO) {
                         edge.text.generate(
                             prompt = prompt,
@@ -48,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     textViewResponse.text = response
                 } catch (e: Exception) {
-                    textViewResponse.text = "Error: ${e.message}"
+                    textViewResponse.text = "CAUGHT ERROR:\n\n${e.message}\n\n${e.stackTraceToString().take(1000)}"
                 }
             }
         }
