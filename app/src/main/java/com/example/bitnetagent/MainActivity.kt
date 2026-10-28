@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.aatricks.llmedge.LLMEdge
-import io.aatricks.llmedge.model.ModelPresets
+import io.aatricks.llmedge.model.ModelSpec
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,7 +40,10 @@ class MainActivity : AppCompatActivity() {
                     val response = withContext(Dispatchers.IO) {
                         edge.text.generate(
                             prompt = prompt,
-                            model = ModelPresets.bitnet
+                            model = ModelSpec.huggingFace(
+                                repoId = "microsoft/bitnet-b1.58-2B-4T-gguf",
+                                filename = "ggml-model-i2_s.gguf"
+                            )
                         )
                     }
                     textViewResponse.text = response
