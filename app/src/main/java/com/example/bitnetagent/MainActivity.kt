@@ -9,8 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.aatricks.llmedge.EngineConfig
 import io.aatricks.llmedge.LLMEdge
-import io.aatricks.llmedge.model.ModelSpec
+import io.aatricks.llmedge.model.ModelPresets
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,7 +36,13 @@ class MainActivity : AppCompatActivity() {
         buttonSend = findViewById(R.id.buttonSend)
         textViewResponse = findViewById(R.id.textViewResponse)
 
-        val edge = LLMEdge.create(applicationContext, lifecycleScope)
+        val edge = LLMEdge.create(
+            context = applicationContext,
+            scope = lifecycleScope,
+            engineConfig = EngineConfig(
+                extraArgs = listOf("--override-kv", "bitnet-b1.58.hidden_activation=str:relu2")
+            )
+        )
 
         buttonSend.setOnClickListener {
             val prompt = editTextPrompt.text.toString()
@@ -50,10 +57,7 @@ class MainActivity : AppCompatActivity() {
                     val response = withContext(Dispatchers.IO) {
                         edge.text.generate(
                             prompt = prompt,
-                            model = ModelSpec.huggingFace(
-                                repoId = "microsoft/bitnet-b1.58-2B-4T-gguf",
-                                filename = "ggml-model-i2_s.gguf"
-                            )
+                            model = ModelPresets.bitnet  // Use the built-in BitNet preset
                         )
                     }
                     textViewResponse.text = response
